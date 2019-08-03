@@ -1,0 +1,8 @@
+README.md
+setup.py
+src/swarmy/__init__.py
+src/swarmy/swarmy.py
+src/swarmy.egg-info/PKG-INFO
+src/swarmy.egg-info/SOURCES.txt
+src/swarmy.egg-info/dependency_links.txt
+src/swarmy.egg-info/top_level.txt
