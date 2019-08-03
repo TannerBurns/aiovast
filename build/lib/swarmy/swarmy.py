@@ -55,8 +55,8 @@ class swarmy:
             if rt
         ]
     
-    def swarm(self, fn: Callable, args: list) -> list:
-        """swarm - process the work
+    def swarm_army(self, fn: Callable, args: list) -> list:
+        """swarm_army - process the work
         
         Arguments:
             fn {Callable} -- function to map
@@ -73,5 +73,23 @@ class swarmy:
         with Pool(processes=self.num_swarms) as pool:
             res = pool.map(workerbee, chunked)
         return [y for x in res for y in x]
+    
+    def na_swarm_army(self, fn: Callable, args: list, chunk_size: int=16) -> list:
+        """na_swarm_army - non asyncio swarm army process the work
+        
+        Arguments:
+            fn {Callable} -- function to map
+            fullgroup {list} -- full list to map with function
+            chunk_size {int} -- size for chunking work
+        
+        Returns:
+            list -- group of returns from the mapped pool
+        """
+        chunked = [args[ind:ind+chunk_size] for ind in range(0, len(args), chunk_size)]
+        results = []
+        for ind in range(0, len(chunked), self.num_swarms):
+            with Pool(processes=self.num_swarms) as pool:
+                results.extend(pool.map(fn, chunked[ind:ind+self.num_swarms]))
+
 
 

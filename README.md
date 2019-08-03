@@ -1,6 +1,6 @@
 # Swarm Army
 
-    UPython3 library to easily scale up and out using multiprocessing and asyncio
+    Python3 library to easily scale up and out using multiprocessing and asyncio
 
 # Usage
 
