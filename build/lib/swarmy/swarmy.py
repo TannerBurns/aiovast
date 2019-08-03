@@ -90,6 +90,7 @@ class swarmy:
         for ind in range(0, len(chunked), self.num_swarms):
             with Pool(processes=self.num_swarms) as pool:
                 results.extend(pool.map(fn, chunked[ind:ind+self.num_swarms]))
+        return results
 
 
 
