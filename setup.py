@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='swarmy',
-     version='1.0',
+     version='1.2',
      author="Tanner Burns",
      author_email="tjburns102@gmail.com",
      description="Python3 library to easily scale up and out!",
