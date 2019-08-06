@@ -56,7 +56,7 @@ class swarmy:
         ]
     
     def swarm(self, fn: Callable, args: list) -> list:
-        """swarm - process the work for a given fn
+        """swarm - process the work for a given fn with multiprocess and asyncio
         
         Arguments:
             fn {Callable} -- function to map
@@ -78,8 +78,8 @@ class swarmy:
                 if res 
             ]
     
-    def na_swarm(self, fn: Callable, args: list, chunk_size: int=16) -> list:
-        """na_swarm - non asyncio swarm army process the work
+    def multiprocess_swarm(self, fn: Callable, args: list, chunk_size: int=16) -> list:
+        """multiprocess_swarm - swarm only using multiprocess pool
         
         Arguments:
             fn {Callable} -- function to map
@@ -100,6 +100,22 @@ class swarmy:
                 for res in pool.map(fn, chunked[ind:ind+self.num_swarms])
                 if res
             ]
+    
+    def async_swarm(self, fn: Callable, args: list) -> list:
+        """async_swarm - swarm only using asyncio
+        
+        Arguments:
+            fn {Callable} -- function to run async
+            args {list} -- arguments to map with function
+        
+        Returns:
+            list -- generator to a list
+        """
+        loop = asyncio.get_event_loop()
+        for ind in range(0, len(args), self.num_workers):
+            yield loop.run_until_complete(
+                self._soldiers(fn, args[ind:ind+self.num_workers])
+            )
         
 
 
