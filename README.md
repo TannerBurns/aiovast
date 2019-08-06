@@ -15,9 +15,9 @@
 # Example
 
     ```python
-    import time
+   import time
 
-    from swarmy import swarmy
+    from src.swarmy import swarmy
 
     def add(args):
         '''
@@ -28,11 +28,15 @@
 
     if __name__ == "__main__":
         args = [(x, y) for x in range(0, 300) for y in range(300, 600)]
-        swarmy = swarmy()
+        swarmy = swarmy(swarms=4, workers=16)
+
         start = time.time()
         rets = swarmy.swarm(add, args)
         stop = time.time() - start
+        print("Completed swarm in: {0}".format(stop))
 
-        print(len(rets))
-        print("Completed in: {0}".format(stop))
+        start = time.time()
+        rets = [ret for page in swarmy.async_swarm(add, args) for ret in page]
+        stop = time.time() - start
+        print("Completed async only swarm in: {0}".format(stop))
     ```
