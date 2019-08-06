@@ -6,6 +6,12 @@
 
     Python3.6+
 
+# Methods
+
+    swarm(fn, arguments) - scale using a multiprocessing pool and asyncio
+    multiprocess_swarm(fn, arguments, chunk_size=16) - scale using just a mutliprocessing pool
+    async_swarm(fn, arguments) - scale using just asyncio
+
 # Example
 
     ```python
