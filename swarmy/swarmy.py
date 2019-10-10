@@ -1,12 +1,12 @@
 import asyncio
-import concurrent.futures
 
+from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from multiprocessing import Pool
-from typing import Callable, Tuple
+from typing import Callable
 
-class swarmy:
-    def __init__(self, swarms=4, workers=16):
+class Swarmy:
+    def __init__(self, swarms: int= 4, workers: int= 16):
         """swarmy class
         
         Keyword Arguments:
@@ -16,8 +16,8 @@ class swarmy:
         self.num_swarms = swarms
         self.num_workers = workers
     
-    async def _soldiers(self, fn: Callable, group: list) -> list:
-        """_soldiers - complete the work
+    async def _army(self, fn: Callable, args: list) -> list:
+        """_army - complete the work
         
         Arguments:
             fn {Callable} -- function call to map
@@ -26,33 +26,18 @@ class swarmy:
         Returns:
             list -- group of returns from the mapped function
         """
-        with concurrent.futures.ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            loop = asyncio.get_event_loop()
-            futures = [
-                loop.run_in_executor(executor, partial(fn, item)) 
-                for item in group if item
-            ]
-        await asyncio.gather(*futures)
-        return [f.result() for f in futures]
+        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
+            futures = [self.loop.run_in_executor(executor, partial(fn, a)) for a in args if a]
+            await asyncio.gather(*futures)
+            return [f.result() for f in futures]
 
-    def _army(self, fn: Callable, args: list) -> list:
-        """_army - assemble the work
-        
-        Arguments:
-            fn {Callable} -- function to map
-            fullgroup {list} -- full list to map with function
-        
-        Returns:
-            list -- group of returns from the mapped function
-        """
-        loop = asyncio.get_event_loop()
+
+    def _swarm_helper(self, fn, args):
+        self.loop = asyncio.get_event_loop() or asyncio.new_event_loop()
         return [
             res 
-            for ind in range(0, len(args), self.num_workers) 
-            for res in loop.run_until_complete(
-                self._soldiers(fn, args[ind:ind+self.num_workers])
-            )
-            if res
+            for i in range(0, len(args), self.num_workers) 
+            for res in self.loop.run_until_complete(self._army(fn, args[i:i+self.num_workers]))
         ]
     
     def swarm(self, fn: Callable, args: list) -> list:
@@ -65,18 +50,14 @@ class swarmy:
         Returns:
             list -- group of results from the mapped pool
         """
+
         chunked = [
             args[ind:ind+int(len(args)/self.num_swarms)]
             for ind in range(0, len(args), int(len(args)/self.num_swarms))
         ]
-        worker = partial(self._army, fn)
+        worker = partial(self._swarm_helper, fn)
         with Pool(processes=self.num_swarms) as pool:
-            return [
-                res
-                for rets in pool.map(worker, chunked)
-                for res in rets
-                if res 
-            ]
+            return [r for res in pool.map(worker, chunked) for r in res if r]
     
     def multiprocess_swarm(self, fn: Callable, args: list, chunk_size: int=16) -> list:
         """multiprocess_swarm - swarm only using multiprocess pool
@@ -111,11 +92,9 @@ class swarmy:
         Returns:
             list -- generator to a list
         """
-        loop = asyncio.get_event_loop()
+        self.loop = asyncio.get_event_loop() or asyncio.new_event_loop()
         for ind in range(0, len(args), self.num_workers):
-            yield loop.run_until_complete(
-                self._soldiers(fn, args[ind:ind+self.num_workers])
-            )
+            yield self.loop.run_until_complete(self._army(fn, args[ind:ind+self.num_workers]))
         
 
 
