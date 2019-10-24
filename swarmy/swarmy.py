@@ -1,11 +1,10 @@
 import asyncio
 
-from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 from multiprocessing import Pool
-from typing import Callable
+from functools import partial
+from typing import Callable, List, Tuple
 
-class Swarmy:
+class Swarmy(object):
     def __init__(self, swarms: int= 4, workers: int= 16):
         """swarmy class
         
@@ -13,89 +12,53 @@ class Swarmy:
             swarms {int} -- number of processes (default: {4})
             workers {int} -- number of asnycio workers (default: {16})
         """
-        self.num_swarms = swarms
-        self.num_workers = workers
+        self.swarms = swarms
+        self.workers = workers
     
-    async def _army(self, fn: Callable, args: list) -> list:
-        """_army - complete the work
-        
-        Arguments:
-            fn {Callable} -- function call to map
-            group {list} -- sub group that will be mapped to the function
-        
-        Returns:
-            list -- group of returns from the mapped function
-        """
-        with ThreadPoolExecutor(max_workers=self.num_workers) as executor:
-            futures = [self.loop.run_in_executor(executor, partial(fn, a)) for a in args if a]
-            await asyncio.gather(*futures)
-            return [f.result() for f in futures]
+    async def _execute(self, fn: Callable, args: list= [], kwargs: dict= {}):
+        if args:
+            return fn(*args)
+        elif args and kwargs:
+            return fn(*args, **kwargs)
+        else:
+            return fn()
+    
+    async def async_work(self, fn: Callable, args: list= [], kwargs: dict= {}):
+        if args:
+            return await self._execute(fn, args)
+        elif args and kwargs:
+            return await self._execute(fn, args, kwargs)
+        else:
+            return await self._execute(fn)
+    
+    async def async_swarm(self, fn: Callable, argumentslist: List[Tuple[list, dict]]):
+        results = []
+        for index in range(0, len(argumentslist), self.workers):
+            for arguments in argumentslist[index:index+self.workers]:
+                if len(arguments) == 2:
+                    if type(arguments[0]) == list and type(arguments[1]) == dict:
+                        results.append(await self.async_work(fn, arguments[0], arguments[1]))
+                    elif type(arguments[0]) == dict and type(arguments[1]) == list:
+                        results.append(await self.async_work(fn, arguments[1], arguments[0]))
+                elif len(arguments) == 1:
+                    if type(arguments[0]) == list:
+                        results.append(await self.async_work(fn, args = arguments[0]))
+                    elif type(arguments[0]) == dict:
+                        results.append(await self.async_work(fn, kwargs = arguments[0]))
+                else:
+                    results.append(await self.async_work(fn))
+        return results
 
-
-    def _swarm_helper(self, fn, args):
-        self.loop = asyncio.get_event_loop() or asyncio.new_event_loop()
-        return [
-            res 
-            for i in range(0, len(args), self.num_workers) 
-            for res in self.loop.run_until_complete(self._army(fn, args[i:i+self.num_workers]))
+    def run_async_swarm(self, fn: Callable, argumentslist: List[Tuple[list, dict]]):
+        loop = asyncio.get_event_loop()
+        return loop.run_until_complete(self.async_swarm(fn, argumentslist))
+    
+    def swarm(self, fn: Callable, argumentslist: List[Tuple[list, dict]]):
+        groupedargs = [
+            argumentslist[index:index+int(len(argumentslist)/self.swarms)]
+            for index in range(0, len(argumentslist), int(len(argumentslist)/self.swarms))
         ]
+        worker = partial(self.run_async_swarm, fn)
+        with Pool(processes=self.swarms) as pool:
+            return [res for results in pool.map(worker, groupedargs) for res in results]
     
-    def swarm(self, fn: Callable, args: list) -> list:
-        """swarm - process the work for a given fn with multiprocess and asyncio
-        
-        Arguments:
-            fn {Callable} -- function to map
-            fullgroup {list} -- full list to map with function
-        
-        Returns:
-            list -- group of results from the mapped pool
-        """
-
-        chunked = [
-            args[ind:ind+int(len(args)/self.num_swarms)]
-            for ind in range(0, len(args), int(len(args)/self.num_swarms))
-        ]
-        worker = partial(self._swarm_helper, fn)
-        with Pool(processes=self.num_swarms) as pool:
-            return [r for res in pool.map(worker, chunked) for r in res if r]
-    
-    def multiprocess_swarm(self, fn: Callable, args: list, chunk_size: int=16) -> list:
-        """multiprocess_swarm - swarm only using multiprocess pool
-        
-        Arguments:
-            fn {Callable} -- function to map
-            fullgroup {list} -- full list to map with function
-            chunk_size {int} -- size for chunking work
-        
-        Returns:
-            list -- group of results from the mapped pool
-        """
-        chunked = [
-            args[ind:ind+chunk_size] 
-            for ind in range(0, len(args), chunk_size)
-        ]
-        with Pool(processes=self.num_swarms) as pool:
-            return [
-                res
-                for ind in range(0, len(chunked), self.num_swarms)
-                for res in pool.map(fn, chunked[ind:ind+self.num_swarms])
-                if res
-            ]
-    
-    def async_swarm(self, fn: Callable, args: list) -> list:
-        """async_swarm - swarm only using asyncio
-        
-        Arguments:
-            fn {Callable} -- function to run async
-            args {list} -- arguments to map with function
-        
-        Returns:
-            list -- generator to a list
-        """
-        self.loop = asyncio.get_event_loop() or asyncio.new_event_loop()
-        for ind in range(0, len(args), self.num_workers):
-            yield self.loop.run_until_complete(self._army(fn, args[ind:ind+self.num_workers]))
-        
-
-
-
