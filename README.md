@@ -19,24 +19,30 @@ import time
 
 from swarmy import Swarmy
 
-def add(args):
-    '''
-    :param args:
-    :return sum of args:
-    '''
-    return args[0]+args[1]
+def add(x, y):
+    return x + y
 
 if __name__ == "__main__":
-    args = [(x, y) for x in range(0, 300) for y in range(300, 600)]
+    args = [([x, y], ) for x in range(0, 300) for y in range(300, 600)]
     swarmy = Swarmy(swarms=4, workers=16)
 
+    # multiprocess pool + asyncio
+    # slower for most task
     start = time.time()
     rets = swarmy.swarm(add, args)
     stop = time.time() - start
     print("Completed swarm in: {0}".format(stop))
 
+    # asyncio
     start = time.time()
-    rets = [ret for page in swarmy.async_swarm(add, args) for ret in page]
+    rets = swarmy.run_async_swarm(add, args)
     stop = time.time() - start
-    print("Completed async only swarm in: {0}".format(stop))
+    print("Completed async swarm in: {0}".format(stop))
+
+    # asyncio in Ipython foreground loop
+    start = time.time()
+    rets = await swarmy.async_swarm(add, args)
+    stop = time.time() - start
+    print("Completed async swarm in: {0}".format(stop))
 ```
+
