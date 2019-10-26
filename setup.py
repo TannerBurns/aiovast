@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
      name='vast',
-     version='2.0.2',
+     version='2.1.1',
      author="Tanner Burns",
      author_email="tjburns102@gmail.com",
      description="Python3 library to easily scale up and out!",

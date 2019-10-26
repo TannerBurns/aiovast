@@ -50,8 +50,8 @@ class Vast(object):
         return results
 
     def run_in_async(self, fn: Callable, argumentslist: List[Tuple[list, dict]]):
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(self.run_async(fn, argumentslist))
+        self.loop = asyncio.new_event_loop()
+        return self.loop.run_until_complete(self.run_async(fn, argumentslist))
     
     def run_in_bulk(self, fn: Callable, argumentslist: List[Tuple[list, dict]]):
         groupedargs = [
