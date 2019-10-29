@@ -36,7 +36,7 @@ class Vast(object):
             ]
     
     def run_in_eventloop(self, fn: Callable, listOfArgs: List[Tuple[list, dict]]= list((list, dict))):
-        self.loop = asyncio.get_event_loop()
+        self.loop = asyncio.new_event_loop()
         return [future.result() for future_results in self.loop.run_until_complete(self._run_in_executor(fn, listOfArgs)) for future in future_results]
 
     
