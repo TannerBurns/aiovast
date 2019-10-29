@@ -49,7 +49,7 @@ from vast.requests import VastSession
 
 session = VastSession(workers=4)
 calls = [
-    ('get', 'https://www.google.com', {'headers': {'AcceptEncoding''application/json'}}), ('post', 'https://www.github.com')]
+    ('get', 'https://www.google.com', [{'headers': {'AcceptEncoding''application/json'}}]), ('post', 'https://www.github.com')]
 responses = session.bulk_requests(calls)
 ```
 
