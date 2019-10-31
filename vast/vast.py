@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Callable, List, Tuple, Awaitable, Any, Union
 
-from .utils import EventLoopReport
+from .utils import EventLoopReport, VastEvent
 
 class Vast(object):
     def __init__(self, workers: int= 16):
@@ -81,3 +81,9 @@ class Vast(object):
             for future in future_results
         ]
     
+    def run_vast_events(self, listOfVastEvents: List[VastEvent], report: bool= False):
+        return [
+            self.run_in_eventloop(vastEvent.fn, vastEvent.listOfArgs, report=report)
+            for vastEvent in listOfVastEvents
+        ]
+        

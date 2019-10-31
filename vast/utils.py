@@ -1,4 +1,4 @@
-from typing import NamedTuple
+from typing import NamedTuple, List, Tuple, Callable
 
 class EventLoopReport(NamedTuple):
     function_name: str
@@ -12,3 +12,6 @@ class EventLoopReport(NamedTuple):
     runtime: int
     results: list
 
+class VastEvent(NamedTuple):
+    fn: Callable
+    listOfArgs: List[Tuple[list, dict]]
