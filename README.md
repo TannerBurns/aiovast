@@ -21,7 +21,7 @@
                 start_time          int
                 stop_time           int
                 runtime             int
-                results             Any
+                results             list
 
 
     Vast Requests
