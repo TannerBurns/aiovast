@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
      name='vast',
-     version='3.0.1',
+     version='3.0.6',
      author='Tanner Burns',
      author_email='tjburns102@gmail.com',
      description='Python3 library to scale functions using asyncio',

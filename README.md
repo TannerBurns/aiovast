@@ -11,6 +11,19 @@
     Vast
 
         run_in_eventloop(fn, listOfArgs) - run function using asyncio in an eventloop and get results for all calls
+
+        run_el_and_report(fn, listOfArgs) - run event loop and report results and runtime information
+                EventLoopReport:
+                function_name       str
+                function_docstring  str
+                function_hash       str
+                function_sha256     str
+                input_count         int
+                input_sha256        str
+                start_time          int
+                stop_time           int
+                runtime             int
+                results             Any
     
 
     Vast Requests
@@ -19,9 +32,13 @@
             calls = [(method, url, listOfKwargs), ...]
         
         bulk_get(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
+
         bulk_post(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
+
         bulk_put(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
+
         bulk_delete(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
+        
         bulk_head(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
         
 
