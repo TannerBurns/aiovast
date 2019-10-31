@@ -10,9 +10,7 @@
 
     Vast
 
-        run_in_eventloop(fn, listOfArgs) - run function using asyncio in an eventloop and get results for all calls
-
-        run_el_and_report(fn, listOfArgs) - run event loop and report results and runtime information
+        run_in_eventloop(fn, listOfArgs, report=False) - run function in eventloop, if report equals true return EventLoopReport
                 EventLoopReport:
                 function_name       str
                 function_docstring  str
@@ -24,7 +22,7 @@
                 stop_time           int
                 runtime             int
                 results             Any
-    
+
 
     Vast Requests
 

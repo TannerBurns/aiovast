@@ -16,6 +16,8 @@ class Vast(object):
             workers {int} -- number of asnycio workers (default: {16})
         """
         self.workers = workers
+        self.loop = None
+        self.executor = None
 
     def _execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
         if args and not kwargs:
@@ -39,8 +41,28 @@ class Vast(object):
                 for index in range(0, len(listOfFutures), self.workers)
             ]
 
-    def run_in_eventloop(self, fn: Callable, listOfArgs: List[Tuple[list, dict]]= list((list, dict))) -> list:
-        self.loop = asyncio.new_event_loop()
+    def run_in_eventloop(self, fn: Callable, listOfArgs: List[Tuple[list, dict]]= list((list, dict)), report: bool= False) -> list:
+        self.loop = self.loop or asyncio.new_event_loop()
+        if report:
+            start_time = time.time()
+            results = self.run_in_eventloop(fn, listOfArgs)
+            stop_time = time.time()
+            return EventLoopReport(
+                str(fn.__name__),
+                str(fn.__doc__),
+                str(fn.__hash__()),
+                hashlib.sha256(
+                    str(fn.__name__).encode() + str(fn.__doc__).encode() + str(fn.__hash__()).encode()
+                ).hexdigest(),
+                len(listOfArgs),
+                hashlib.sha256(
+                    str(listOfArgs).encode()
+                ).hexdigest(),
+                start_time,
+                stop_time,
+                stop_time - start_time,
+                results
+            )
         return [
             future.result()
             for index in range(0, len(listOfArgs), self.workers)
@@ -55,23 +77,3 @@ class Vast(object):
             for future in future_results
         ]
     
-    def run_el_and_report(self, fn: Callable, listOfArgs: List[Tuple[list, dict]]= list((list, dict))) -> EventLoopReport:
-        start_time = time.time()
-        results = self.run_in_eventloop(fn, listOfArgs)
-        stop_time = time.time()
-        return EventLoopReport(
-            str(fn.__name__),
-            str(fn.__doc__),
-            str(fn.__hash__()),
-            hashlib.sha256(
-                str(fn.__name__).encode() + str(fn.__doc__).encode() + str(fn.__hash__()).encode()
-            ).hexdigest(),
-            len(listOfArgs),
-            hashlib.sha256(
-                str(listOfArgs).encode()
-            ).hexdigest(),
-            start_time,
-            stop_time,
-            stop_time - start_time,
-            results
-        )
