@@ -4,7 +4,7 @@ import time
 
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from typing import Callable, List, Tuple, Awaitable, Any
+from typing import Callable, List, Tuple, Awaitable, Any, Union
 
 from .utils import EventLoopReport
 
@@ -41,7 +41,11 @@ class Vast(object):
                 for index in range(0, len(listOfFutures), self.workers)
             ]
 
-    def run_in_eventloop(self, fn: Callable, listOfArgs: List[Tuple[list, dict]]= list((list, dict)), report: bool= False) -> list:
+    def run_in_eventloop(
+        self, 
+        fn: Callable, 
+        listOfArgs: List[Tuple[list, dict]]= list((list, dict)), 
+        report: bool= False) -> Union[list, EventLoopReport]:
         self.loop = self.loop or asyncio.new_event_loop()
         if report:
             start_time = time.time()
