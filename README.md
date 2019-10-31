@@ -22,6 +22,11 @@
                 stop_time           int
                 runtime             int
                 results             list
+        
+        run_vast_events(listOfVastEvents, report=False) - run a vast event
+                VastEvent:
+                fn                  Callable
+                listOfArgs          List[Tuple[list, dict]]
 
 
     Vast Requests
