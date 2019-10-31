@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, NamedTuple
+from typing import NamedTuple
 
 class EventLoopReport(NamedTuple):
     function_name: str
@@ -10,5 +10,5 @@ class EventLoopReport(NamedTuple):
     start_time: int
     stop_time: int
     runtime: int
-    results: Any
+    results: list
 
