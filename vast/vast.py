@@ -46,7 +46,6 @@ class Vast(object):
         fn: Callable, 
         listOfArgs: List[Tuple[list, dict]]= list((list, dict)), 
         report: bool= False) -> Union[list, EventLoopReport]:
-        self.loop = self.loop or asyncio.new_event_loop()
         if report:
             start_time = time.time()
             results = self.run_in_eventloop(fn, listOfArgs)
@@ -67,6 +66,8 @@ class Vast(object):
                 stop_time - start_time,
                 results
             )
+        
+        self.loop = asyncio.new_event_loop()
         return [
             future.result()
             for index in range(0, len(listOfArgs), self.workers)
