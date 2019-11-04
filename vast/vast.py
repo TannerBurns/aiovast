@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from typing import Callable, List, Tuple, Awaitable, Any, Union
 
+from tqdm import tqdm
 from .utils import EventLoopReport, VastEvent
 
 class Vast(object):
@@ -45,7 +46,8 @@ class Vast(object):
         self, 
         fn: Callable, 
         listOfArgs: List[Tuple[list, dict]]= list((list, dict)), 
-        report: bool= False) -> Union[list, EventLoopReport]:
+        report: bool= False,
+        disable_progress_bar: bool= False) -> Union[list, EventLoopReport]:
         if report:
             start_time = time.time()
             results = self.run_in_eventloop(fn, listOfArgs)
@@ -70,7 +72,7 @@ class Vast(object):
         self.loop = asyncio.new_event_loop()
         return [
             future.result()
-            for index in range(0, len(listOfArgs), self.workers)
+            for index in tqdm(range(0, len(listOfArgs), self.workers), disable= disable_progress_bar)
             for args in listOfArgs[index:index+self.workers]
             for future_results in self.loop.run_until_complete(
                 self.run_in_executor(
@@ -82,9 +84,9 @@ class Vast(object):
             for future in future_results
         ]
     
-    def run_vast_events(self, listOfVastEvents: List[VastEvent], report: bool= False):
+    def run_vast_events(self, listOfVastEvents: List[VastEvent], **kwargs):
         return [
-            self.run_in_eventloop(vastEvent.fn, vastEvent.listOfArgs, report=report)
+            self.run_in_eventloop(vastEvent.fn, vastEvent.listOfArgs, **kwargs)
             for vastEvent in listOfVastEvents
         ]
         
