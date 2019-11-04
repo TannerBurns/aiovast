@@ -10,7 +10,8 @@
 
     Vast
 
-        run_in_eventloop(fn, listOfArgs, report=False) - run function in eventloop, if report equals true return EventLoopReport
+        run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False)
+            run function in eventloop, if report equals true return EventLoopReport
                 EventLoopReport:
                 function_name       str
                 function_docstring  str
@@ -23,7 +24,8 @@
                 runtime             int
                 results             list
         
-        run_vast_events(listOfVastEvents, report=False) - run a vast event
+        run_vast_events(listOfVastEvents, report=False, disable_progress_bar=False)
+            run a vast event
                 VastEvent:
                 fn                  Callable
                 listOfArgs          List[Tuple[list, dict]]
