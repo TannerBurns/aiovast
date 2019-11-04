@@ -10,7 +10,7 @@ from .utils import EventLoopReport, VastEvent
 
 class Vast(object):
     def __init__(self, workers: int= 16):
-        """Vase class
+        """Vast class
         
         Keyword Arguments:
             workers {int} -- number of asnycio workers (default: {16})
@@ -66,7 +66,7 @@ class Vast(object):
                 stop_time - start_time,
                 results
             )
-        
+            
         self.loop = asyncio.new_event_loop()
         return [
             future.result()

@@ -47,6 +47,7 @@
 
 # Examples
 
+Example using class
 ```python
 import time
 
@@ -57,13 +58,28 @@ def add(x, y): return x + y
 if __name__ == '__main__':
     vast = Vast(workers=16)
 
-    args = [([x, y], ) for x in range(0, 200) for y in range(200, 400)]
+    args = [[[x, y]] for x in range(0, 200) for y in range(200, 400)]
     start = time.time()
     rets = vast.run_in_eventloop(add, args)
     print(f'Completed in: {time.time() - start}')
-
 ```
 
+Example using decorator
+```python
+from vast.decorators import vast_loop
+
+def add(x, y): return x + y
+
+@vast_loop(workers=16)
+def run_in_bulk(fn, listOfArgs, report):
+    print(f'running {fn.__name__}')
+
+if __name__ == '__main__':
+    args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
+    rets = run_in_bulk(add, args, False)
+```
+
+Vast session for sending bulk requests
 ```python
 from vast.requests import VastSession
 
