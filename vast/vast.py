@@ -50,7 +50,7 @@ class Vast(object):
         disable_progress_bar: bool= False) -> Union[list, EventLoopReport]:
         if report:
             start_time = time.time()
-            results = self.run_in_eventloop(fn, listOfArgs)
+            results = self.run_in_eventloop(fn, listOfArgs, disable_progress_bar=disable_progress_bar)
             stop_time = time.time()
             return EventLoopReport(
                 str(fn.__name__),

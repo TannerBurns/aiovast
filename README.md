@@ -73,12 +73,12 @@ from vast.decorators import vast_loop
 def add(x, y): return x + y
 
 @vast_loop(workers=16)
-def run_in_bulk(fn, listOfArgs, report):
+def run_in_bulk(fn, listOfArgs, report=False, disable_progress_bar=False):
     print(f'running {fn.__name__}')
 
 if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
-    rets = run_in_bulk(add, args, False)
+    rets = run_in_bulk(add, args)
 ```
 
 Vast session for sending bulk requests

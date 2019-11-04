@@ -8,9 +8,9 @@ class vast_loop(Vast):
     
     def __call__(self, fn):
         
-        def vloop(*args):
-            fn(*args)
-            return self.run_in_eventloop(*args)
+        def vloop(*args, **kwargs):
+            fn(*args, **kwargs)
+            return self.run_in_eventloop(*args, **kwargs)
         
         return vloop
     
