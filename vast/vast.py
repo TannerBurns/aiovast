@@ -4,20 +4,22 @@ import time
 
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
-from typing import Callable, List, Tuple, Awaitable, Any, Union
+from typing import Callable, List, Tuple, Awaitable, Any, Union, NewType
 
 from tqdm import tqdm
 from .utils import EventLoopReport, VastEvent
 
 class Vast(object):
-    def __init__(self, workers: int= 16):
+    event_loop = NewType('event_loop', asyncio.unix_events._UnixSelectorEventLoop)
+
+    def __init__(self, workers: int= 16, loop: event_loop= None):
         """Vast class
         
         Keyword Arguments:
             workers {int} -- number of asnycio workers (default: {16})
         """
         self.workers = workers
-        self.loop = None
+        self.loop = loop
         self.executor = None
 
     def _execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
@@ -63,13 +65,17 @@ class Vast(object):
                 hashlib.sha256(
                     str(listOfArgs).encode()
                 ).hexdigest(),
+                len(results),
+                hashlib.sha256(
+                    str(results).encode()
+                ).hexdigest(),
                 start_time,
                 stop_time,
                 stop_time - start_time,
                 results
             )
             
-        self.loop = asyncio.new_event_loop()
+        self.loop = self.loop or asyncio.new_event_loop()
         return [
             future.result()
             for index in tqdm(range(0, len(listOfArgs), self.workers), disable= disable_progress_bar)
@@ -84,7 +90,9 @@ class Vast(object):
             for future in future_results
         ]
     
-    def run_vast_events(self, listOfVastEvents: List[VastEvent], **kwargs):
+    def run_vast_events(self, 
+    listOfVastEvents: List[VastEvent], 
+    **kwargs: dict) -> Union[List[list], List[EventLoopReport]]:
         return [
             self.run_in_eventloop(vastEvent.fn, vastEvent.listOfArgs, **kwargs)
             for vastEvent in listOfVastEvents

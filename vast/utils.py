@@ -7,6 +7,8 @@ class EventLoopReport(NamedTuple):
     function_sha256: str
     input_count: int
     input_sha256: str
+    output_count: int
+    output_sha256: str
     start_time: int
     stop_time: int
     runtime: int
