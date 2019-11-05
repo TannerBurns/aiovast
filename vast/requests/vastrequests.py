@@ -45,15 +45,15 @@ class VastSession(Vast):
         bulk_delete_calls = [call[1:] for call in calls if call[0].lower() == 'delete']
         bulk_head_calls = [call[1:] for call in calls if call[0].lower() == 'head']
         responses = []
-        if bulk_get:
+        if bulk_get_calls:
             responses.extend([self.bulk_get(*call, **kwargs) for call in bulk_get_calls])
-        if bulk_post:
+        if bulk_post_calls:
             responses.extend([self.bulk_post(*call, **kwargs) for call in bulk_post_calls])
-        if bulk_put:
+        if bulk_put_calls:
             responses.extend([self.bulk_put(*call, **kwargs) for call in bulk_put_calls])
-        if bulk_delete:
+        if bulk_delete_calls:
             responses.extend([self.bulk_delete(*call, **kwargs) for call in bulk_delete_calls])
-        if bulk_head:
+        if bulk_head_calls:
             responses.extend([self.bulk_head(*call, **kwargs) for call in bulk_head_calls])
         return responses
 
