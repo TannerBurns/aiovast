@@ -1,5 +1,8 @@
 # Vast
-
+    
+![MIT badge](https://img.shields.io/badge/license-MIT-black)
+![Python3.7 badge](https://img.shields.io/badge/python-v3.7-blue)
+    
     Python3 library to easily scale using asyncio
 
 # Usage
