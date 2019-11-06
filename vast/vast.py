@@ -1,18 +1,24 @@
 import asyncio
 import hashlib
 import time
+import sys
 
 from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 from typing import Callable, List, Tuple, Awaitable, Any, Union, NewType
 
 from tqdm import tqdm
-from .utils import EventLoopReport, VastEvent
+from .utils import EventLoopReport, VastEvent, vast_fragment
 
 class Vast(object):
-    event_loop = NewType('event_loop', asyncio.unix_events._UnixSelectorEventLoop)
+    Eventloop = NewType(
+        'Eventloop', 
+        asyncio.windows_events._WindowsSelectorEventLoop
+    ) if sys.platform == 'win32' else NewType(
+        'Eventloop', 
+        asyncio.unix_events._UnixSelectorEventLoop
+    )
 
-    def __init__(self, workers: int= 16, loop: event_loop= None):
+    def __init__(self, workers: int= 16, loop: Eventloop= None):
         """Vast class
         
         Keyword Arguments:
@@ -22,19 +28,15 @@ class Vast(object):
         self.loop = loop
         self.executor = None
 
+
     def _execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
-        if args and not kwargs:
-            return fn(*args)
-        elif kwargs and not args:
-            return fn(**kwargs)
-        elif args and kwargs:
-            return fn(*args, **kwargs)
-        else:
-            return fn()
+        return fn(*args, **kwargs)
     
+
     async def _get_future(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Awaitable:
-        return self.loop.run_in_executor(self.executor, partial(self._execute, fn, args, kwargs))
+        return self.loop.run_in_executor(self.executor, vast_fragment(self._execute, fn, args, kwargs))
     
+
     async def run_in_executor(self, listOfFutures: List[Awaitable]) -> list:
         with ThreadPoolExecutor(max_workers= self.workers) as self.executor:
             return [
@@ -43,6 +45,7 @@ class Vast(object):
                 )
                 for index in range(0, len(listOfFutures), self.workers)
             ]
+
 
     def run_in_eventloop(
         self, 
@@ -74,7 +77,7 @@ class Vast(object):
                 stop_time - start_time,
                 results
             )
-
+            
         self.loop = self.loop or asyncio.new_event_loop()
         return [
             future.result()
@@ -90,6 +93,7 @@ class Vast(object):
             for future in future_results
         ]
     
+
     def run_vast_events(self, 
     listOfVastEvents: List[VastEvent], 
     **kwargs: dict) -> Union[List[list], List[EventLoopReport]]:
