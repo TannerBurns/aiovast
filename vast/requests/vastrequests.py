@@ -23,5 +23,20 @@ class VastSession(Vast):
         })
         self.basepath = os.path.realpath(os.getcwd())
     
+    def bulk_get_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
+        return self.run_in_eventloop(self.session.get, calls, **kwargs)
+    
+    def bulk_post_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
+        return self.run_in_eventloop(self.session.post, calls, **kwargs)
+    
+    def bulk_put_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
+        return self.run_in_eventloop(self.session.put, calls, **kwargs)
+    
+    def bulk_delete_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
+        return self.run_in_eventloop(self.session.delete, calls, **kwargs)
+    
+    def bulk_head_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
+        return self.run_in_eventloop(self.session.head, calls, **kwargs)
+    
     def bulk_requests(self, calls: List[Tuple[Tuple[str, str], dict]], **kwargs: dict):
         return self.run_in_eventloop(self.session.request, calls, **kwargs)
