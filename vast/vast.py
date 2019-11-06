@@ -82,12 +82,9 @@ class Vast(object):
         return [
             future.result()
             for index in tqdm(range(0, len(listOfArgs), self.workers), disable= disable_progress_bar)
-            for args in listOfArgs[index:index+self.workers]
             for future_results in self.loop.run_until_complete(
                 self.run_in_executor(
-                    [
-                        self._get_future(fn, *args)
-                    ]
+                    [self._get_future(fn, *args) for args in listOfArgs[index:index+self.workers]]
                 )
             )
             for future in future_results
