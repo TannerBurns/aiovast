@@ -1,8 +1,12 @@
 # Vast
-    
+
+![Version badge](https://img.shields.io/github/manifest-json/v/tannerburns/vast?color=red)
+![RepoSize badge](https://img.shields.io/github/repo-size/tannerburns/vast?color=green)
 ![MIT badge](https://img.shields.io/badge/license-MIT-black)
-![Python3.7 badge](https://img.shields.io/badge/python-v3.7-blue?logo=python&logoColor=yellow)
-    
+![Python3.6 badge](https://img.shields.io/badge/python-v3.6+-blue?logo=python&logoColor=yellow)
+![Platform badge](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win32-yellow)
+
+
     Python3 library to easily scale using asyncio
 
 # Usage
