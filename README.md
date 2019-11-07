@@ -1,7 +1,7 @@
 # Vast
     
 ![MIT badge](https://img.shields.io/badge/license-MIT-black)
-![Python3.7 badge](https://img.shields.io/badge/python-v3.7-blue)
+![Python3.7 badge](https://img.shields.io/badge/python-v3.7-blue?logo=python&logoColor=yellow)
     
     Python3 library to easily scale using asyncio
 
@@ -34,20 +34,17 @@
                 listOfArgs          List[Tuple[list, dict]]
 
 
-    Vast Requests
+    Vast Requests - VastSession
 
         bulk_requests(listOfCalls) - run all requests calls in an eventloop
-            calls = [(method, url, listOfKwargs), ...]
+            calls = [([method, url], kwargs), ...]
         
-        bulk_get(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
-
-        bulk_post(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
-
-        bulk_put(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
-
-        bulk_delete(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
-        
-        bulk_head(url, listOfKwargs) - run all requests for url on given kwargs in listOfKwargs
+        bulk_get(listOfCalls) - run all requests
+        bulk_post(listOfCalls) - run all requests
+        bulk_put(listOfCalls) - run all requests
+        bulk_delete(listOfCalls) - run all requests
+        bulk_head(listOfCalls) - run all requests
+            calls = [([url], kwargs), ...]
         
 
 # Examples
