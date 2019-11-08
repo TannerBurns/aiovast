@@ -51,12 +51,18 @@
             calls = [([url], kwargs), ...]
         
 
-# Examples
+# Basic Examples
 
-Example using class
+Basic add example
 ```python
-import time
+def add(x, y): return x + y
 
+if __name__ == '__main__':
+    rets = [add(x, y) for x in range(0, 5) for y in range(5, 10)]
+```
+
+Example bulk add using vast class
+```python
 from vast import Vast
 
 def add(x, y): return x + y
@@ -64,13 +70,11 @@ def add(x, y): return x + y
 if __name__ == '__main__':
     vast = Vast(workers=16)
 
-    args = [[[x, y]] for x in range(0, 200) for y in range(200, 400)]
-    start = time.time()
+    args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
     rets = vast.run_in_eventloop(add, args)
-    print(f'Completed in: {time.time() - start}')
 ```
 
-Example using decorator
+Example bulk add using decorator
 ```python
 from vast.decorators import vast_loop
 
@@ -82,6 +86,8 @@ if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
     rets = add_in_bulk(args)
 ```
+
+# Bulk Requests Example
 
 Vast session for sending bulk requests
 ```python
