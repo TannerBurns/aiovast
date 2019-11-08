@@ -1,8 +1,8 @@
 # Vast
 
+![MIT badge](https://img.shields.io/badge/license-MIT-black)
 ![Version badge](https://img.shields.io/github/manifest-json/v/tannerburns/vast?color=red)
 ![RepoSize badge](https://img.shields.io/github/repo-size/tannerburns/vast?color=green)
-![MIT badge](https://img.shields.io/badge/license-MIT-black)
 ![Python3.6 badge](https://img.shields.io/badge/python-v3.6+-blue?logo=python&logoColor=yellow)
 ![Platform badge](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win32-yellow)
 
@@ -74,15 +74,13 @@ Example using decorator
 ```python
 from vast.decorators import vast_loop
 
-def add(x, y): return x + y
-
 @vast_loop(workers=16)
-def run_in_bulk(fn, listOfArgs, report=False, disable_progress_bar=False):
-    print(f'running {fn.__name__}')
+def add_in_bulk(x, y):
+    return x+y
 
 if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
-    rets = run_in_bulk(add, args)
+    rets = add_in_bulk(args)
 ```
 
 Vast session for sending bulk requests

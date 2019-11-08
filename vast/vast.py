@@ -39,7 +39,7 @@ class Vast(object):
     def run_in_eventloop(
         self, 
         fn: Callable, 
-        listOfArgs: List[Tuple[list, dict]], 
+        listOfArgs: List[Union[list, dict]],
         report: bool= False,
         disable_progress_bar: bool= False) -> Union[list, EventLoopReport]:
         if report:
