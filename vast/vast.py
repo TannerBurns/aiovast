@@ -4,8 +4,9 @@ import time
 import sys
 
 from concurrent.futures import ThreadPoolExecutor
-from typing import Callable, List, Tuple, Awaitable, Any, Union, NewType
+from typing import Callable, List, Awaitable, Any, Union, NewType
 
+from colored import fg
 from tqdm import tqdm
 from .utils import EventLoopReport, VastEvent, vast_fragment
 
@@ -27,7 +28,7 @@ class Vast(object):
     async def create_futures(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Awaitable:
         return self.loop.run_in_executor(self.executor, vast_fragment(self._futures_execute, fn, args, kwargs))
     
-    async def run_in_executor(self, listOfFutures: List[Awaitable]) -> list:
+    async def run_executor(self, listOfFutures: List[Awaitable]) -> list:
         with ThreadPoolExecutor(max_workers= self.workers) as self.executor:
             return [
                 await asyncio.gather(
@@ -59,11 +60,16 @@ class Vast(object):
         self.loop = self.loop or asyncio.new_event_loop()
         return [
             future.result()
-            for index in tqdm(range(0, len(listOfArgs), self.workers), disable= disable_progress_bar)
-            for future_results in self.loop.run_until_complete(
-                self.run_in_executor(
-                    [self.create_futures(fn, *args) for args in listOfArgs[index:index+self.workers]]
+            for index in tqdm(
+                range(0, len(listOfArgs), self.workers), 
+                disable= disable_progress_bar,
+                bar_format=(
+                    '%s{l_bar}{bar}| {n_fmt}/{total_fmt} Chunks [{elapsed}<{remaining},' \
+                    ' {rate_fmt}{postfix}]' % fg('green_3a')
                 )
+            )
+            for future_results in self.loop.run_until_complete(
+                self.run_executor([self.create_futures(fn, *args) for args in listOfArgs[index:index+self.workers]])
             )
             for future in future_results
         ]

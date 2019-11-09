@@ -21,7 +21,8 @@ setup (
     include_package_data = True,
     install_requires = [
         'requests',
-        'tqdm'
+        'tqdm',
+        'colored'
     ],
     classifiers = [
         'Programming Language :: Python :: 3',
