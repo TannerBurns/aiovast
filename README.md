@@ -17,7 +17,7 @@
 
     Vast
 
-        run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False)
+        run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False, progress_bar_color='green_3a')
             run function in eventloop, if report equals true return EventLoopReport
                 EventLoopReport:
                 function_name       str
