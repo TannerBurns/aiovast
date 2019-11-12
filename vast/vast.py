@@ -17,10 +17,11 @@ class Vast(object):
     Eventloop = NewType('Eventloop', asyncio.windows_events._WindowsSelectorEventLoop) \
     if sys.platform == 'win32' else NewType('Eventloop', asyncio.unix_events._UnixSelectorEventLoop)
 
-    def __init__(self, workers: int= 16, loop: Eventloop= None):
+    def __init__(self, workers: int= 32, loop: Eventloop= None):
         self.workers = workers
         self.loop = loop
         self.executor = None
+        self.max_futures_pool = 10000
 
     def _futures_execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
         return fn(*args, **kwargs)
@@ -62,7 +63,7 @@ class Vast(object):
         return [
             future.result()
             for index in tqdm(
-                range(0, len(listOfArgs), self.workers), 
+                range(0, len(listOfArgs), self.max_futures_pool), 
                 disable= disable_progress_bar,
                 bar_format=(
                     '%s{l_bar}{bar}| {n_fmt}/{total_fmt} Chunks [{elapsed}<{remaining},' \
@@ -70,9 +71,12 @@ class Vast(object):
                 )
             )
             for future_results in self.loop.run_until_complete(
-                self.run_executor([self.create_futures(fn, *args) for args in listOfArgs[index:index+self.workers]])
+                self.run_executor(
+                    [self.create_futures(fn, *args) for args in listOfArgs[index:index+self.max_futures_pool]]
+                )
             )
             for future in future_results
+                    
         ]
     
     def run_vast_events(self, 
