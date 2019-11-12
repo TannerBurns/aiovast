@@ -42,7 +42,8 @@ class Vast(object):
         fn: Callable, 
         listOfArgs: List[Union[list, dict]],
         report: bool= False,
-        disable_progress_bar: bool= False) -> Union[list, EventLoopReport]:
+        disable_progress_bar: bool= False,
+        progress_bar_color: str= 'green_3a') -> Union[list, EventLoopReport]:
         if report:
             start_time = time.time()
             results = self.run_in_eventloop(fn, listOfArgs, disable_progress_bar=disable_progress_bar)
@@ -65,7 +66,7 @@ class Vast(object):
                 disable= disable_progress_bar,
                 bar_format=(
                     '%s{l_bar}{bar}| {n_fmt}/{total_fmt} Chunks [{elapsed}<{remaining},' \
-                    ' {rate_fmt}{postfix}]' % fg('green_3a')
+                    ' {rate_fmt}{postfix}]' % fg(progress_bar_color)
                 )
             )
             for future_results in self.loop.run_until_complete(
