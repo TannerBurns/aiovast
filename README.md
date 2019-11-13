@@ -15,41 +15,42 @@
 
 # Methods
 
-    Vast
+```
+Vast
 
-        run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False, progress_bar_color='green_3a')
-            run function in eventloop, if report equals true return EventLoopReport
-                EventLoopReport:
-                function_name       str
-                function_docstring  str
-                function_hash       str
-                function_sha256     str
-                input_count         int
-                input_sha256        str
-                start_time          int
-                stop_time           int
-                runtime             int
-                results             list
-        
-        run_vast_events(listOfVastEvents, report=False, disable_progress_bar=False)
-            run a vast event
-                VastEvent:
-                fn                  Callable
-                listOfArgs          List[Tuple[list, dict]]
+    run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False, progress_bar_color='green_3a')
+        run function in eventloop, if report equals true return EventLoopReport
+            EventLoopReport:
+            function_name       str
+            function_docstring  str
+            function_hash       str
+            function_sha256     str
+            input_count         int
+            input_sha256        str
+            start_time          int
+            stop_time           int
+            runtime             int
+            results             list
 
+    run_vast_events(listOfVastEvents, report=False, disable_progress_bar=False)
+        run a vast event
+            VastEvent:
+            fn                  Callable
+            listOfArgs          List[Tuple[list, dict]]
+```
+```
+Vast Requests - VastSession
 
-    Vast Requests - VastSession
-
-        bulk_requests(listOfCalls) - run all requests calls in an eventloop
-            calls = [([method, url], kwargs), ...]
-        
-        bulk_get(listOfCalls) - run all requests
-        bulk_post(listOfCalls) - run all requests
-        bulk_put(listOfCalls) - run all requests
-        bulk_delete(listOfCalls) - run all requests
-        bulk_head(listOfCalls) - run all requests
-            calls = [([url], kwargs), ...]
-        
+    bulk_requests(listOfCalls) - run all requests calls in an eventloop
+        calls = [([method, url], kwargs), ...]
+    
+    bulk_get(listOfCalls) - run all requests
+    bulk_post(listOfCalls) - run all requests
+    bulk_put(listOfCalls) - run all requests
+    bulk_delete(listOfCalls) - run all requests
+    bulk_head(listOfCalls) - run all requests
+        calls = [([url], kwargs), ...]
+```        
 
 # Basic Examples
 
@@ -85,6 +86,18 @@ def add_in_bulk(x, y):
 if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
     rets = add_in_bulk(args)
+```
+
+Example using Vast context manager
+```python
+from vast import Vast
+
+def add(x, y): return x + y
+
+if __name__ == '__main__':
+    args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
+    with Vast(workers=32) as vast:
+        rets = vast.run_in_eventloop(add, args)
 ```
 
 # Bulk Requests Example
