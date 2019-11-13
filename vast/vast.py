@@ -22,6 +22,12 @@ class Vast(object):
         self.workers = workers
         self.loop = loop
         self.executor = None
+    
+    def __enter__(self):
+        return self
+    
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.loop = None
 
     def _futures_execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
         return fn(*args, **kwargs)

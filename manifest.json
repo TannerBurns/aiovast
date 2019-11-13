@@ -1,7 +1,7 @@
 {
-  "name": "vast",
-  "version": "3.9.1",
-  "author": "Tanner Burns",
-  "author_email": "tjburns102@gmail.com",
-  "description": "Python3 library to scale functions using asyncio"
+    "name": "vast",
+    "version": "3.9.3",
+    "author": "Tanner Burns",
+    "author_email": "tjburns102@gmail.com",
+    "description": "Python3 library to scale functions using asyncio"
 }
