@@ -1,7 +1,27 @@
 {
     "name": "vast",
-    "version": "3.9.3",
+    "version": "3.9.7",
+    "description": "Python3 library to scale functions using asyncio",
     "author": "Tanner Burns",
     "author_email": "tjburns102@gmail.com",
-    "description": "Python3 library to scale functions using asyncio"
+    "url": "https://github.com/TannerBurns/vast",
+    "requirements": [
+        "requests",
+        "tqdm",
+        "colored"
+    ],
+    "classifiers": [
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent"
+    ],
+    "package_data": {},
+    "package_include": [
+        "vast",
+        "vast.*"
+    ],
+    "package_exclude": [],
+    "include_package_data": true,
+    "entry_points": {},
+    "scripts": [],
+    "keywords": []
 }

@@ -18,6 +18,11 @@
 ```
 Vast
 
+    Default class values:
+        max_futures_pool = 1000
+        max_async_pool = 16
+        loop = asyncio.new_event_loop
+
     run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False, progress_bar_color='green_3a')
         run function in eventloop, if report equals true return EventLoopReport
             EventLoopReport:
@@ -40,6 +45,11 @@ Vast
 ```
 ```
 Vast Requests - VastSession
+
+    Default class values:
+        max_futures_pool = 1000
+        max_async_pool = 16 (max concurrent connections)
+        loop = asyncio.new_event_loop
 
     bulk_requests(listOfCalls) - run all requests calls in an eventloop
         calls = [([method, url], kwargs), ...]
@@ -69,7 +79,7 @@ from vast import Vast
 def add(x, y): return x + y
 
 if __name__ == '__main__':
-    vast = Vast(workers=16)
+    vast = Vast(max_async_pool=16)
 
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
     rets = vast.run_in_eventloop(add, args)
@@ -79,7 +89,7 @@ Example bulk add using decorator
 ```python
 from vast.decorators import vast_loop
 
-@vast_loop(workers=16)
+@vast_loop(max_async_pool=16)
 def add_in_bulk(x, y):
     return x+y
 
@@ -96,7 +106,7 @@ def add(x, y): return x + y
 
 if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
-    with Vast(workers=32) as vast:
+    with Vast(max_async_pool=32) as vast:
         rets = vast.run_in_eventloop(add, args)
 ```
 
@@ -106,7 +116,7 @@ Vast session for sending bulk requests
 ```python
 from vast.requests import VastSession
 
-session = VastSession(workers=4)
+session = VastSession(max_async_pool=4)
 calls = [
     (['get', 'https://www.google.com'], {'headers': {'User-Agent':'custom'}}),
     (['post', 'https://www.github.com'], )
