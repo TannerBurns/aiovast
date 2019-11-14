@@ -20,7 +20,7 @@ Vast
 
     Default class values:
         max_futures_pool = 1000
-        max_async_pool = 16
+        max_async_pool = 32
         loop = asyncio.new_event_loop
 
     run_in_eventloop(fn, listOfArgs, report=False, disable_progress_bar=False, progress_bar_color='green_3a')
@@ -48,7 +48,7 @@ Vast Requests - VastSession
 
     Default class values:
         max_futures_pool = 1000
-        max_async_pool = 16 (max concurrent connections)
+        max_async_pool = 32 (max concurrent connections)
         loop = asyncio.new_event_loop
 
     bulk_requests(listOfCalls) - run all requests calls in an eventloop
