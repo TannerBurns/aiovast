@@ -6,7 +6,7 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from typing import Callable, List, Awaitable, Any, Union, NewType
 
-from colored import fg
+from colored import fg, style
 from tqdm import tqdm
 from .utils import EventLoopReport, VastEvent, vast_fragment
 
@@ -73,8 +73,11 @@ class Vast(object):
                 start_time, stop_time, stop_time - start_time, results
             )
 
-        # return all the assigned work, list of results for each arg in listOfArgs    
-        return [
+        # return all the assigned work, list of results for each arg in listOfArgs
+        # if bar is not disabled; print newline for progress bar padding 
+        if not disable_progress_bar:
+            print()  
+        event_loop_results = [
             future.result()
             for index in tqdm(
                 range(0, len(listOfArgs), self.max_futures_pool), 
@@ -91,6 +94,12 @@ class Vast(object):
             )
             for future in future_results        
         ]
+        # if bar is not disabled; reset style after progress bar print
+        if not disable_progress_bar:
+            print(style.RESET)
+        # return the event loop results
+        return event_loop_results
+
     
     def run_vast_events(self, 
     listOfVastEvents: List[VastEvent], 
