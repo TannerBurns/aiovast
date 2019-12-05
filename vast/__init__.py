@@ -17,7 +17,7 @@ class Vast(object):
     Eventloop = NewType('Eventloop', asyncio.windows_events._WindowsSelectorEventLoop) \
         if sys.platform == 'win32' else NewType('Eventloop', asyncio.unix_events._UnixSelectorEventLoop)
 
-    def __init__(self, loop: Eventloop= None, max_async_pool: int= 32, max_futures_pool: int= 1000):
+    def __init__(self, loop: Eventloop= None, max_async_pool: int= 32, max_futures_pool: int= 10000):
         self.loop = loop or asyncio.new_event_loop()
         self.max_futures_pool = max_futures_pool
         self.max_async_pool = max_async_pool
@@ -36,13 +36,22 @@ class Vast(object):
     async def create_futures(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Awaitable:
         return self.loop.run_in_executor(self.executor, vast_fragment(self._futures_execute, fn, args, kwargs))
     
-    async def run_executor(self, listOfFutures: List[Awaitable]) -> list:
+    async def run_executor(
+        self,
+        listOfFutures: List[Awaitable],
+        disable_progress_bar: bool,
+        progress_bar_color: str) -> list:
+        bar_format = '%s{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining},' \
+                    ' {rate_fmt}{postfix}]' % fg(progress_bar_color)
         with ThreadPoolExecutor(max_workers= self.max_async_pool) as self.executor:
             return [
-                await asyncio.gather(
-                    *listOfFutures[index:index+self.max_async_pool]
+                await result
+                for result in tqdm(
+                    asyncio.as_completed(listOfFutures), 
+                    total=len(listOfFutures),
+                    disable= disable_progress_bar,
+                    bar_format=bar_format
                 )
-                for index in range(0, len(listOfFutures), self.max_async_pool)
             ]
 
     def run_in_eventloop(
@@ -76,23 +85,18 @@ class Vast(object):
         # return all the assigned work, list of results for each arg in listOfArgs
         # if bar is not disabled; print newline for progress bar padding 
         if not disable_progress_bar:
-            print()  
+            print()
+        # get event loop results  
         event_loop_results = [
-            future.result()
-            for index in tqdm(
-                range(0, len(listOfArgs), self.max_futures_pool), 
-                disable= disable_progress_bar,
-                bar_format=(
-                    '%s{l_bar}{bar}| {n_fmt}/{total_fmt} Chunks [{elapsed}<{remaining},' \
-                    ' {rate_fmt}{postfix}]' % fg(progress_bar_color)
-                )
-            )
-            for future_results in self.loop.run_until_complete(
+            future_result.result()
+            for index in range(0, len(listOfArgs), self.max_futures_pool)
+            for future_result in self.loop.run_until_complete(
                 self.run_executor(
-                    [self.create_futures(fn, *args) for args in listOfArgs[index:index+self.max_futures_pool]]
+                    [self.create_futures(fn, *args) for args in listOfArgs[index:index+self.max_futures_pool]],
+                    disable_progress_bar,
+                    progress_bar_color
                 )
-            )
-            for future in future_results        
+            )        
         ]
         # if bar is not disabled; reset style after progress bar print
         if not disable_progress_bar:
