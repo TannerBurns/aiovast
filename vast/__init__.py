@@ -27,23 +27,23 @@ class Vast(object):
     
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.loop = None
-        if hasattr(self, 'executor'):
-            self.executor = None
 
     def _futures_execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
         return fn(*args, **kwargs)
     
-    async def create_futures(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Awaitable:
-        return self.loop.run_in_executor(self.executor, vast_fragment(self._futures_execute, fn, args, kwargs))
-    
     async def run_executor(
         self,
-        listOfFutures: List[Awaitable],
+        fn,
+        listOfArgs: list,
         disable_progress_bar: bool,
         progress_bar_color: str) -> list:
         bar_format = '%s{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining},' \
                     ' {rate_fmt}{postfix}]' % fg(progress_bar_color)
-        with ThreadPoolExecutor(max_workers= self.max_async_pool) as self.executor:
+        with ThreadPoolExecutor(max_workers= self.max_async_pool) as executor:
+            listOfFutures = [
+                self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, *args))
+                for args in listOfArgs
+            ]
             return [
                 await result
                 for result in tqdm(
@@ -88,11 +88,12 @@ class Vast(object):
             print()
         # get event loop results  
         event_loop_results = [
-            future_result.result()
+            future_result
             for index in range(0, len(listOfArgs), self.max_futures_pool)
             for future_result in self.loop.run_until_complete(
                 self.run_executor(
-                    [self.create_futures(fn, *args) for args in listOfArgs[index:index+self.max_futures_pool]],
+                    fn,
+                    listOfArgs[index:index+self.max_futures_pool],
                     disable_progress_bar,
                     progress_bar_color
                 )
