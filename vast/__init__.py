@@ -37,8 +37,8 @@ class Vast(object):
         listOfArgs: list,
         disable_progress_bar: bool,
         progress_bar_color: str) -> list:
-        bar_format = '%s{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining},' \
-                    ' {rate_fmt}{postfix}]' % fg(progress_bar_color)
+        bar_format = '{l_bar}%s{bar}%s| {n_fmt}/{total_fmt} [{elapsed}<{remaining},' \
+                    ' {rate_fmt}{postfix}]' % (fg(progress_bar_color), style.RESET)
         with ThreadPoolExecutor(max_workers= self.max_async_pool) as executor:
             listOfFutures = [
                 self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, *args))
@@ -82,10 +82,6 @@ class Vast(object):
                 start_time, stop_time, stop_time - start_time, results
             )
 
-        # return all the assigned work, list of results for each arg in listOfArgs
-        # if bar is not disabled; print newline for progress bar padding 
-        if not disable_progress_bar:
-            print()
         # get event loop results  
         event_loop_results = [
             future_result
@@ -99,9 +95,7 @@ class Vast(object):
                 )
             )        
         ]
-        # if bar is not disabled; reset style after progress bar print
-        if not disable_progress_bar:
-            print(style.RESET)
+        
         # return the event loop results
         return event_loop_results
 
