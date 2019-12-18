@@ -17,13 +17,6 @@ class EventLoopReport(NamedTuple):
     results: list
 
 
-class VastEvent(NamedTuple):
-    """VastEvent - NamedTuple for holding vast events to run in an event loop
-    """
-    fn: Callable
-    listOfArgs: List[Tuple[list, dict]]
-
-
 class vast_fragment(object):
     """vast_fragment - simple implementation of functools.partial
     """
