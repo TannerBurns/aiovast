@@ -11,7 +11,6 @@
 
 
 ## Table of Contents
----
 
 - [ Requirements ](#requirements)
 - [ Installation ](#install)
@@ -31,14 +30,12 @@
 
 <a name="requirements"></a>
 ## Requirements
----
 * Python3.6+
 
 <br>
 
 <a name="install"></a>
 ## Installation
----
 * Create a new virtual environment with python 3.6+
 
     * Install the vast library
@@ -52,7 +49,6 @@
 
 <a name="information"></a>
 ## Information
----
     Details about the vast utility
 
 
@@ -146,7 +142,6 @@ Function calls for single method types
 
 <a name="#examples"></a>
 ## Examples
----
 ```python
 #Basic add example
 def add(x, y): return x + y
