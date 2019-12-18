@@ -11,7 +11,7 @@ class VastSession(Vast):
         self.session = requests.Session()
         rqAdapters = requests.adapters.HTTPAdapter(
             pool_connections = self.max_async_pool, 
-            pool_maxsize = self.max_async_pool+2, 
+            pool_maxsize = self.max_async_pool, 
             max_retries = 3
         )
         self.session.mount("https://", rqAdapters)
@@ -20,7 +20,6 @@ class VastSession(Vast):
                 "Accept-Encoding": "gzip, deflate",
                 "User-Agent" : "gzip,  Python Vast Requests Client"
         })
-        self.basepath = os.path.realpath(os.getcwd())
     
     def bulk_get_requests(self, calls: List[Tuple[Tuple[str], dict]], **kwargs: dict):
         return self.run_in_eventloop(self.session.get, calls, **kwargs)

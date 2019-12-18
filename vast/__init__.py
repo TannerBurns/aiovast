@@ -8,7 +8,7 @@ from typing import Callable, List, Awaitable, Any, Union, NewType
 
 from colored import fg, style
 from tqdm import tqdm
-from .utils import EventLoopReport, VastEvent, vast_fragment
+from .utils import EventLoopReport, vast_fragment
 
 class Vast(object):
     """simple utilities to convert a synchronous task into a asynchronous task
@@ -98,15 +98,4 @@ class Vast(object):
         
         # return the event loop results
         return event_loop_results
-
-    
-    def run_vast_events(self, 
-    listOfVastEvents: List[VastEvent], 
-    **kwargs: dict) -> Union[List[list], List[EventLoopReport]]:
-        # return all assigned work for list of vast events (a fn and list of arguments)
-        # ? Could this become a multiprocess pool, and split up the vast events into a mutliproc pool
-        return [
-            self.run_in_eventloop(vastEvent.fn, vastEvent.listOfArgs, **kwargs)
-            for vastEvent in listOfVastEvents
-        ]
         
