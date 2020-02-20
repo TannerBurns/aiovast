@@ -10,6 +10,7 @@ from colored import fg, style
 from tqdm import tqdm
 from .utils import EventLoopReport, vast_fragment
 
+
 class Vast(object):
     """simple utilities to convert a synchronous task into a asynchronous task
     """
@@ -17,10 +18,12 @@ class Vast(object):
     Eventloop = NewType('Eventloop', asyncio.windows_events._WindowsSelectorEventLoop) \
         if sys.platform == 'win32' else NewType('Eventloop', asyncio.unix_events._UnixSelectorEventLoop)
 
-    def __init__(self, loop: Eventloop= None, max_async_pool: int= 32, max_futures_pool: int= 10000):
+    def __init__(self, loop: Eventloop = None, max_async_pool: int = 32, max_futures_pool: int = 10000,
+                 disable_progress_bar: bool = True):
         self.loop = loop or asyncio.new_event_loop()
         self.max_futures_pool = max_futures_pool
         self.max_async_pool = max_async_pool
+        self.disable_progress_bar = disable_progress_bar
     
     def __enter__(self):
         return self
@@ -28,7 +31,7 @@ class Vast(object):
     def __exit__(self, exc_type, exc_value, exc_traceback):
         self.loop = None
 
-    def _futures_execute(self, fn: Callable, args: list= [], kwargs: dict= {}) -> Any:
+    def _futures_execute(self, fn: Callable, args: list = [], kwargs: dict = {}) -> Any:
         return fn(*args, **kwargs)
     
     async def run_executor(
@@ -39,9 +42,10 @@ class Vast(object):
         progress_bar_color: str) -> list:
         bar_format = '{l_bar}%s{bar}%s| {n_fmt}/{total_fmt} [{elapsed}<{remaining},' \
                     ' {rate_fmt}{postfix}]' % (fg(progress_bar_color), style.RESET)
+
         with ThreadPoolExecutor(max_workers= self.max_async_pool) as executor:
             listOfFutures = [
-                self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, *args))
+                self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, args))
                 for args in listOfArgs
             ]
             return [
@@ -58,9 +62,13 @@ class Vast(object):
         self, 
         fn: Callable, 
         listOfArgs: List[Union[list, dict]],
-        report: bool= False,
-        disable_progress_bar: bool= False,
-        progress_bar_color: str= 'green_3a') -> Union[list, EventLoopReport]:
+        report: bool = False,
+        disable_progress_bar: bool = None,
+        progress_bar_color: str = 'green_3a') -> Union[list, EventLoopReport]:
+
+        if disable_progress_bar is None:
+            disable_progress_bar = self.disable_progress_bar
+
         if report:
             start_time = time.time()
             # recursive call to run_in_eventloop without report == True
