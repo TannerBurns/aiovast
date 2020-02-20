@@ -1,6 +1,6 @@
 {
-    "name": "vast",
-    "version": "3.9.8",
+    "name": "aiovast",
+    "version": "4.0.0",
     "description": "Python3 library to scale functions using asyncio",
     "author": "Tanner Burns",
     "author_email": "tjburns102@gmail.com",
@@ -11,7 +11,7 @@
         "colored"
     ],
     "classifiers": [
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
         "Operating System :: OS Independent"
     ],
     "package_data": {},
