@@ -1,4 +1,5 @@
-from typing import NamedTuple, List, Tuple, Callable
+from typing import NamedTuple
+
 
 class EventLoopReport(NamedTuple):
     """EventLoopReport - NamedTuple for reporting information gathered before and after the event loop
@@ -48,6 +49,4 @@ class vast_fragment(object):
         self.fn, self.args, self.kwargs, namespace = state
         self.__dict__ = namespace if namespace else {}
             
-        
 
-        
