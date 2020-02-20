@@ -2,8 +2,8 @@
 
 <!--Badges-->
 ![MIT badge](https://img.shields.io/badge/license-MIT-black)
-![Version badge](https://img.shields.io/github/manifest-json/v/tannerburns/vast?color=red)
-![RepoSize badge](https://img.shields.io/github/repo-size/tannerburns/vast?color=green)
+![Version badge](https://img.shields.io/github/manifest-json/v/tannerburns/aiovast?color=red)
+![RepoSize badge](https://img.shields.io/github/repo-size/tannerburns/aiovast?color=green)
 ![Python3.6 badge](https://img.shields.io/badge/python-v3.6+-blue?logo=python&logoColor=yellow)
 ![Platform badge](https://img.shields.io/badge/platform-linux%20%7C%20osx%20%7C%20win32-yellow)
 
@@ -15,15 +15,15 @@
 - [ Requirements ](#requirements)
 - [ Installation ](#install)
 - [ Information ](#information)
-    - [ Vast ](#vast)
-        - [ Vast Event Loop ](#vasteventloop)
-    - [ VastSession ](#vastsession)
-        - [ Vast Bulk Requests ](#vastbulkrequests)
-            - [ Vast Bulk Get ](#vastbulkget)
-            - [ Vast Bulk Post ](#vastbulkpost)
-            - [ Vast Bulk Put ](#vastbulkput)
-            - [ Vast Bulk Delete ](#vastbulkdelete)
-            - [ Vast Bulk Head ](#vastbulkhead)
+    - [ Vast ](#aiovast)
+        - [ Vast Event Loop ](#aiovasteventloop)
+    - [ VastSession ](#aiovastsession)
+        - [ Vast Bulk Requests ](#aiovastbulkrequests)
+            - [ Vast Bulk Get ](#aiovastbulkget)
+            - [ Vast Bulk Post ](#aiovastbulkpost)
+            - [ Vast Bulk Put ](#aiovastbulkput)
+            - [ Vast Bulk Delete ](#aiovastbulkdelete)
+            - [ Vast Bulk Head ](#aiovastbulkhead)
 - [ Examples ](#examples)
 
 <br>
@@ -38,10 +38,10 @@
 ## Installation
 * Create a new virtual environment with python 3.6+
 
-    * Install the vast library
+    * Install the aiovast library
     ```bash
-    $ git clone https://www.github.com/tannerburns/vast
-    $ cd vast
+    $ git clone https://www.github.com/tannerburns/aiovast
+    $ cd aiovast
     $ pip3 install .
     ```
 
@@ -49,10 +49,10 @@
 
 <a name="information"></a>
 ## Information
-    Details about the vast utility
+    Details about the aiovast utility
 
 
-<a name="#vast"></a>
+<a name="#aiovast"></a>
 ### Vast
 
     Main variables
@@ -63,7 +63,7 @@
 
 <br>
 
-<a name="#vasteventloop"></a>
+<a name="#aiovasteventloop"></a>
 #### Vast Event Loop
 
     Main method
@@ -82,7 +82,7 @@
 
 <br>
 
-<a name="#vastsession"></a>
+<a name="#aiovastsession"></a>
 ### VastSession
 
     Variables
@@ -94,7 +94,7 @@
 
 <br>
 
-<a name="#vastbulkrequests"></a>
+<a name="#aiovastbulkrequests"></a>
 #### Vast Bulk Requests
 
     A function that can handle any method requests will accept     
@@ -108,31 +108,31 @@
 ```
 Function calls for single method types
 ```
-<a name="#vastbulkget"></a>
+<a name="#aiovastbulkget"></a>
 ##### Vast Bulk Get
 * bulk_get_requests
     * arg1: listOfCalls, list
         * format: [ [[url: string], options: dictionary], [[url: string], options: dictionary], .. ]
 
-<a name="#vastbulkpost"></a>
+<a name="#aiovastbulkpost"></a>
 ##### Vast Bulk Post
 * bulk_post_requests
     * arg1: listOfCalls, list
         * format: [ [[url: string], options: dictionary], [[url: string], options: dictionary], .. ]
 
-<a name="#vastbulkput"></a>
+<a name="#aiovastbulkput"></a>
 ##### Vast Bulk Put
 * bulk_put_requests
     * arg1: listOfCalls, list
         * format: [ [[url: string], options: dictionary], [[url: string], options: dictionary], .. ]
 
-<a name="#vastbulkdelete"></a>
+<a name="#aiovastbulkdelete"></a>
 ##### Vast Bulk Delete
 * bulk_delete_requests
     * arg1: listOfCalls, list
         * format: [ [[url: string], options: dictionary], [[url: string], options: dictionary], .. ]
 
-<a name="#vastbulkhead"></a>
+<a name="#aiovastbulkhead"></a>
 ##### Vast Bulk Head
 * bulk_head_requests
     * arg1: listOfCalls, list
@@ -151,34 +151,34 @@ if __name__ == '__main__':
 ```
 
 ```python
-#Example bulk add using vast class
-from vast import Vast
+#Example bulk add using aiovast class
+from aiovast import Vast
 
 def add(x, y): return x + y
 
 if __name__ == '__main__':
-    vast = Vast()
+    aiovast = Vast()
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
-    rets = vast.run_in_eventloop(add, args)
+    rets = aiovast.run_in_eventloop(add, args)
 ```
 
 ```python
 #Example using Vast context manager
-from vast import Vast
+from aiovast import Vast
 
 def add(x, y): return x + y
 
 if __name__ == '__main__':
     args = [[[x, y]] for x in range(0, 5) for y in range(5, 10)]
-    with Vast() as vast:
-        rets = vast.run_in_eventloop(add, args)
+    with Vast() as aiovast:
+        rets = aiovast.run_in_eventloop(add, args)
 ```
 
 ```python
 #Example bulk add using decorator
-from vast.decorators import vast_loop
+from aiovast.decorators import vast_loop
 
-@vast_loop(max_async_pool=16)
+@aiovast_loop(max_async_pool=16)
 def add_in_bulk(x, y):
     return x+y
 
@@ -189,7 +189,7 @@ if __name__ == '__main__':
 
 ```python
 #Vast session for sending bulk requests
-from vast.requests import VastSession
+from aiovast.requests import VastSession
 
 session = VastSession(max_async_pool=4)
 calls = [
