@@ -45,7 +45,7 @@ class Vast(object):
 
         with ThreadPoolExecutor(max_workers= self.max_async_pool) as executor:
             listOfFutures = [
-                self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, args))
+                self.loop.run_in_executor(executor, vast_fragment(self._futures_execute, fn, *args))
                 for args in listOfArgs
             ]
             return [
