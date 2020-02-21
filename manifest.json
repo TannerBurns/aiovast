@@ -1,6 +1,6 @@
 {
     "name": "aiovast",
-    "version": "4.0.1",
+    "version": "4.0.2",
     "description": "Python3 library to scale functions using asyncio",
     "author": "Tanner Burns",
     "author_email": "tjburns102@gmail.com",
