@@ -19,6 +19,8 @@ setup(
     package_data = manifest.get('package_data', None),
     include_package_data = manifest.get('include_package_data', True),
     description =  manifest.get('description', 'default.manifest.description'),
+    long_description = README,
+    long_description_content_type='text/markdown',
     url = manifest.get('url', 'default.manifest.url'),
     author = manifest.get('author', 'default.manifest.author'),
     author_email = manifest.get('author_email', 'default.manifest.author_email'),
